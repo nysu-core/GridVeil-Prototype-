@@ -377,7 +377,7 @@
       </div>
       <div class="stat copper">
         <div class="label">Test-set error (MAPE)</div>
-        <div class="value">2.69<span class="unit">%</span></div>
+        <div class="value" id="mape-val">—<span class="unit">%</span></div>
         <div class="note">Hybrid CNN-LSTM-Attention - significant improvement over baseline</div>
       </div>
       <div class="stat navy">
@@ -407,10 +407,10 @@
         </div>
         <div class="compare-card priv">
           <h4>Hybrid CNN-LSTM-Attention, 4h lookback</h4>
-          <div class="big">2.69%</div>
+          <div class="big" id="mape-compare-val">—%</div>
         </div>
       </div>
-      <p class="footnote">The Hybrid model significantly cuts test-set MAPE relative to baselines by leveraging short-term local patterns and long-term attention weights.</p>
+      <p class="footnote">The Hybrid model significantly cuts test-set MAPE relative to baselines by leveraging short-term local patterns and long-term attention weights. <em>Note: the 5.77% Random Forest figure has no corresponding training script in this repository — confirm it before citing it in the final submission.</em></p>
     </div>
 
     <div class="caveat">Anomaly thresholds on the next page are recalibrated against this LSTM's tighter error distribution — they are not the same cutoffs used for the earlier Random Forest baseline.</div>
@@ -427,37 +427,34 @@
     <div class="status-legend">
       <div class="status-card">
         <span class="dot" style="background:var(--teal)"></span>Normal
-        <div class="count">44,554</div>
-        <div class="pct">&lt; 0.421 error · 85% of hours</div>
+        <div class="count" id="count-normal">—</div>
+        <div class="pct" id="pct-normal">— of test-set hours</div>
       </div>
       <div class="status-card">
         <span class="dot" style="background:var(--copper)"></span>Unusual
-        <div class="count">7,834</div>
-        <div class="pct">&gt; 0.421 error · 15% of hours</div>
+        <div class="count" id="count-unusual">—</div>
+        <div class="pct" id="pct-unusual">— of test-set hours</div>
       </div>
       <div class="status-card">
         <span class="dot" style="background:var(--rust)"></span>High deviation
-        <div class="count">28</div>
-        <div class="pct">Extreme peaks</div>
+        <div class="count" id="count-highdev">—</div>
+        <div class="pct" id="pct-highdev">Extreme peaks</div>
       </div>
     </div>
 
     <div class="panel">
       <h3>Recent flagged hours</h3>
-      <p class="desc">Sample of the last test-set days, mixing normal and flagged hours for context</p>
+      <p class="desc">Actual flagged hours from the embedded test-set results (not illustrative examples)</p>
       <table>
         <thead>
           <tr><th>Time</th><th style="text-align:right">Expected</th><th style="text-align:right">Actual</th><th style="text-align:right">Error</th><th>Status</th></tr>
         </thead>
-        <tbody>
-          <tr><td>Dec 24 18:00</td><td class="num">4,500</td><td class="num">5,100</td><td class="num">+13.3%</td><td><span class="status-pill status-Unusual">Unusual</span></td></tr>
-          <tr><td>Dec 27 20:00</td><td class="num">5,240</td><td class="num">5,980</td><td class="num">+14.1%</td><td><span class="status-pill status-High-deviation">High deviation</span></td></tr>
-          <tr><td>Dec 30 09:00</td><td class="num">3,860</td><td class="num">3,420</td><td class="num">-11.4%</td><td><span class="status-pill status-High-deviation">High deviation</span></td></tr>
+        <tbody id="anomaly-tbody">
         </tbody>
       </table>
     </div>
 
-    <div class="caveat">Thresholds are calculated dynamically using the 95th percentile of the Hybrid model's training absolute errors (threshold = 0.421), ensuring adaptive, data-driven anomaly detection rather than static percentage cutoffs.</div>
+    <div class="caveat" id="threshold-caveat">Thresholds are calculated dynamically using the 95th (Unusual) and 99th (High deviation) percentiles of the Hybrid model's training absolute errors, expressed in real MW after inverse-scaling — not the raw z-scored fit values, and not the train/validation/test split sizes.</div>
   </section>
 
   <!-- PAGE 4: PRIVACY -->
@@ -522,6 +519,46 @@
   const OVERVIEW = {"fleet": [{"name": "WestTripoli", "year": 1976, "mw": 185, "fuel": "Heavy fuel oil"}, {"name": "NorthBenghazi", "year": 1979, "mw": 1041, "fuel": "Natural gas"}, {"name": "DernaSteamSta", "year": 1985, "mw": 65, "fuel": "Heavy fuel oil"}, {"name": "TobrukSteamSt", "year": 1985, "mw": 65, "fuel": "Heavy fuel oil"}, {"name": "Zuenita", "year": 1994, "mw": 335, "fuel": "Natural gas"}, {"name": "SouthTripoli", "year": 1994, "mw": 147, "fuel": "Natural gas"}, {"name": "AlKhums", "year": 1995, "mw": 999, "fuel": "Natural gas"}, {"name": "DoubleCornerP", "year": 2000, "mw": 480, "fuel": "Natural gas"}, {"name": "AzZawiyah", "year": 2003, "mw": 1440, "fuel": "Natural gas"}, {"name": "WesternMountai", "year": 2005, "mw": 624, "fuel": "Natural gas"}, {"name": "Misrata", "year": 2010, "mw": 500, "fuel": "Natural gas"}, {"name": "GulfofSirte", "year": 2016, "mw": 350, "fuel": "Natural gas"}], "total_named_mw": 6231, "oldest_year": 1976, "avg_age": 28.8, "solar_years": [2015, 2020, 2025, 2030, 2040, 2050], "solar_cost": [2165.0, 1378.0, 984.0, 886.0, 723.0, 723.0], "wind_years": [2015, 2020, 2025, 2030, 2040, 2050], "wind_cost": [1985.0, 1489.0, 1191.0, 1087.0, 933.0, 933.0]};
 
   document.getElementById('next-hour-val').textContent = DATA.next_hour_pred.toLocaleString();
+
+  // ---- FIX (issues 3 & 4): every number below is read from DATA, the same
+  // object the chart uses, instead of being separately hand-typed. This makes
+  // it impossible for the visible cards/table to drift from what was computed.
+  (function populateFromData(){
+    document.getElementById('mape-val').innerHTML = DATA.mape.toFixed(2) + '<span class="unit">%</span>';
+    document.getElementById('mape-compare-val').textContent = DATA.mape.toFixed(2) + '%';
+
+    const counts = DATA.status_counts;
+    const total = counts.Normal + counts.Unusual + counts['High deviation'];
+    const pct = n => total ? ((n / total) * 100).toFixed(1) + '%' : '—';
+
+    document.getElementById('count-normal').textContent = counts.Normal.toLocaleString();
+    document.getElementById('pct-normal').textContent = pct(counts.Normal) + ' of test-set hours';
+    document.getElementById('count-unusual').textContent = counts.Unusual.toLocaleString();
+    document.getElementById('pct-unusual').textContent = pct(counts.Unusual) + ' of test-set hours';
+    document.getElementById('count-highdev').textContent = counts['High deviation'].toLocaleString();
+    document.getElementById('pct-highdev').textContent = pct(counts['High deviation']) + ' of test-set hours';
+
+    const tbody = document.getElementById('anomaly-tbody');
+    const statusClass = s => 'status-' + s.replace(/ /g, '-');
+    DATA.anomaly_table.forEach(row => {
+      const tr = document.createElement('tr');
+      const sign = row.actual >= row.expected ? '+' : '';
+      tr.innerHTML = `<td>${row.time}</td>` +
+        `<td class="num">${row.expected.toLocaleString()}</td>` +
+        `<td class="num">${row.actual.toLocaleString()}</td>` +
+        `<td class="num">${sign}${row.pct_error}%</td>` +
+        `<td><span class="status-pill ${statusClass(row.status)}">${row.status}</span></td>`;
+      tbody.appendChild(tr);
+    });
+
+    if (DATA.anomaly_threshold_mw != null) {
+      document.getElementById('threshold-caveat').textContent =
+        `Thresholds are calculated dynamically using the 95th (Unusual) and 99th ` +
+        `(High deviation) percentiles of the Hybrid model's training absolute errors, ` +
+        `in real MW after inverse-scaling (95th-pct threshold ≈ ${DATA.anomaly_threshold_mw.toLocaleString()} MW) ` +
+        `— not the raw z-scored fit values, and not the train/validation/test split sizes.`;
+    }
+  })();
 
   // ---- generation mix (Step 1 overview, static real figures) ----
   const mix = [
