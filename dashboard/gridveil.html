@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GridVeil — Load Forecasting &amp; Privacy-Preserving Analytics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #EEF2F3;
+    --panel: #FFFFFF;
+    --panel-2: #F5F8F8;
+    --ink: #0F2A38;
+    --ink-soft: #4B6371;
+    --line: #D8E1E3;
+    --teal: #1F7A6C;
+    --teal-soft: #E4F1EE;
+    --copper: #C0692B;
+    --copper-soft: #FBEBDD;
+    --rust: #B0402A;
+    --rust-soft: #FBE6E1;
+    --navy: #10263D;
+    --sans: 'IBM Plex Sans', -apple-system, Segoe UI, Roboto, sans-serif;
+    --mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    --radius: 3px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg: #0E1720;
+      --panel: #16222C;
+      --panel-2: #131E27;
+      --ink: #E7EEF1;
+      --ink-soft: #93A7B1;
+      --line: #24333E;
+      --teal-soft: #133129;
+      --copper-soft: #2E2013;
+      --rust-soft: #301813;
+      --navy: #CFE3EF;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg: #0E1720;
+    --panel: #16222C;
+    --panel-2: #131E27;
+    --ink: #E7EEF1;
+    --ink-soft: #93A7B1;
+    --line: #24333E;
+    --teal-soft: #133129;
+    --copper-soft: #2E2013;
+    --rust-soft: #301813;
+    --navy: #CFE3EF;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+
+  /* ---- top bar ---- */
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:14px 22px;
+    border-bottom:1px solid var(--line);
+    background:var(--panel);
+    position:sticky;
+    top:0;
+    z-index:20;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+  .brand{display:flex;align-items:baseline;gap:10px;}
+  .brand .mark{
+    width:10px;height:10px;border-radius:2px;
+    background:linear-gradient(135deg, var(--teal), var(--copper));
+    display:inline-block;
+    transform:rotate(45deg);
+  }
+  .brand h1{font-size:18px;font-weight:700;margin:0;letter-spacing:-0.01em;}
+  .brand .sub{font-size:12px;color:var(--ink-soft);font-family:var(--mono);}
+
+  .tabs{display:flex;gap:2px;background:var(--panel-2);border:1px solid var(--line);border-radius:6px;padding:3px;}
+  .tab{
+    font-family:var(--sans);
+    font-size:13px;
+    font-weight:500;
+    padding:7px 14px;
+    border:none;
+    background:transparent;
+    color:var(--ink-soft);
+    border-radius:4px;
+    cursor:pointer;
+    transition:background .15s ease, color .15s ease;
+  }
+  .tab:hover{color:var(--ink);}
+  .tab.active{background:var(--panel);color:var(--navy);box-shadow:0 1px 2px rgba(0,0,0,.06);}
+
+  main{max-width:1180px;margin:0 auto;padding:28px 22px 60px;}
+  .page{display:none;}
+  .page.active{display:block;animation:fadein .35s ease;}
+  @keyframes fadein{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+
+  .page-head{margin-bottom:22px;}
+  .eyebrow{font-family:var(--mono);font-size:11px;color:var(--copper);letter-spacing:.02em;margin:0 0 4px;}
+  .page-head h2{font-size:24px;margin:0 0 6px;font-weight:700;letter-spacing:-0.01em;}
+  .page-head p{margin:0;color:var(--ink-soft);font-size:14px;max-width:640px;line-height:1.5;}
+
+  /* ---- stat cards ---- */
+  .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px;}
+  @media (max-width:900px){.stat-grid{grid-template-columns:repeat(2,1fr);}}
+  .stat{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-left:3px solid var(--teal);
+    border-radius:var(--radius);
+    padding:14px 16px;
+  }
+  .stat.copper{border-left-color:var(--copper);}
+  .stat.navy{border-left-color:var(--navy);}
+  .stat .label{font-size:11.5px;color:var(--ink-soft);text-transform:none;margin-bottom:6px;}
+  .stat .value{font-family:var(--mono);font-size:22px;font-weight:600;letter-spacing:-0.01em;}
+  .stat .value .unit{font-size:13px;color:var(--ink-soft);font-weight:400;margin-left:3px;}
+  .stat .note{font-size:11.5px;color:var(--ink-soft);margin-top:4px;}
+
+  .panel{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:18px 20px;
+    margin-bottom:16px;
+  }
+  .panel h3{margin:0 0 4px;font-size:14.5px;font-weight:600;}
+  .panel .desc{color:var(--ink-soft);font-size:12.5px;margin:0 0 14px;}
+
+  .two-col{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;}
+  @media (max-width:900px){.two-col{grid-template-columns:1fr;}}
+
+  /* ---- generation mix bars ---- */
+  .mix-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:13px;}
+  .mix-row .name{width:110px;flex-shrink:0;color:var(--ink-soft);}
+  .mix-row .bar-track{flex:1;height:10px;background:var(--panel-2);border-radius:3px;overflow:hidden;}
+  .mix-row .bar-fill{height:100%;border-radius:3px;}
+  .mix-row .pct{width:52px;text-align:right;font-family:var(--mono);font-weight:600;}
+
+  .fleet-list{display:grid;gap:10px;margin-top:16px;}
+  .fleet-row{display:grid;grid-template-columns:118px 1fr 64px;align-items:center;gap:10px;font-size:12px;}
+  .fleet-row .name{color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .fleet-row .bar-track{height:10px;background:var(--panel-2);border-radius:3px;overflow:hidden;}
+  .fleet-row .bar-fill{height:100%;background:var(--navy);border-radius:3px;}
+  .fleet-row.oil .bar-fill{background:var(--rust);}
+  .fleet-row .capacity{font-family:var(--mono);text-align:right;color:var(--ink);}
+  .fleet-row .capacity small{color:var(--ink-soft);font-size:10px;}
+
+  .cost-summary{display:grid;gap:12px;margin-top:18px;}
+  .cost-row{display:grid;grid-template-columns:112px 1fr auto;align-items:center;gap:10px;font-size:12px;}
+  .cost-row .label{color:var(--ink-soft);}
+  .cost-row .bar-track{height:12px;background:var(--panel-2);border-radius:3px;overflow:hidden;}
+  .cost-row .bar-fill{height:100%;border-radius:3px;}
+  .cost-row.solar .bar-fill{background:var(--copper);}
+  .cost-row.wind .bar-fill{background:var(--teal);}
+  .cost-row .value{font-family:var(--mono);font-weight:600;white-space:nowrap;}
+  .cost-years{display:flex;justify-content:space-between;margin:14px 0 0 122px;color:var(--ink-soft);font-family:var(--mono);font-size:10px;}
+
+  .source-note{font-size:11px;color:var(--ink-soft);margin-top:10px;line-height:1.5;border-top:1px solid var(--line);padding-top:10px;}
+
+  /* ---- forecast chart ---- */
+  .chart-wrap{position:relative;height:320px;}
+
+  .legend-row{display:flex;gap:18px;font-size:12.5px;color:var(--ink-soft);margin-top:10px;}
+  .legend-row span{display:inline-flex;align-items:center;gap:6px;}
+  .legend-row i{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  /* ---- anomaly table ---- */
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  thead th{
+    text-align:left;
+    font-family:var(--mono);
+    font-weight:500;
+    font-size:11px;
+    color:var(--ink-soft);
+    padding:8px 10px;
+    border-bottom:1px solid var(--line);
+  }
+  tbody td{padding:9px 10px;border-bottom:1px solid var(--line);}
+  tbody tr:last-child td{border-bottom:none;}
+  .num{font-family:var(--mono);text-align:right;}
+  .status-pill{
+    display:inline-block;
+    font-size:11px;
+    font-family:var(--mono);
+    padding:2px 8px;
+    border-radius:20px;
+  }
+  .status-Normal{background:var(--teal-soft);color:var(--teal);}
+  .status-Unusual{background:var(--copper-soft);color:var(--copper);}
+  .status-High.deviation, .status-High-deviation{background:var(--rust-soft);color:var(--rust);}
+
+  .status-legend{display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap;}
+  .status-card{
+    flex:1;min-width:150px;
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:12px 14px;
+    background:var(--panel);
+  }
+  .status-card .dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;}
+  .status-card .count{font-family:var(--mono);font-size:20px;font-weight:600;margin-top:4px;}
+  .status-card .pct{color:var(--ink-soft);font-size:12px;}
+
+  /* ---- privacy flow ---- */
+  .flow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:18px 0 22px;}
+  .flow-step{
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:10px 14px;
+    font-size:12.5px;
+    font-family:var(--mono);
+    color:var(--ink-soft);
+    text-align:center;
+    flex:1;
+    min-width:120px;
+  }
+  .flow-arrow{color:var(--ink-soft);font-size:15px;flex-shrink:0;}
+
+  .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px;}
+  @media (max-width:700px){.compare-grid{grid-template-columns:1fr;}}
+  .compare-card{border:1px solid var(--line);border-radius:var(--radius);padding:16px;}
+  .compare-card h4{margin:0 0 4px;font-size:12.5px;color:var(--ink-soft);font-weight:500;}
+  .compare-card .big{font-family:var(--mono);font-size:30px;font-weight:600;}
+  .compare-card.dim{background:var(--panel-2);}
+  .compare-card.priv{background:var(--copper-soft);}
+  .compare-card.priv .big{color:var(--copper);}
+
+  .footnote{font-size:11.5px;color:var(--ink-soft);line-height:1.6;margin-top:6px;}
+
+  .caveat{
+    border:1px dashed var(--line);
+    border-radius:var(--radius);
+    padding:10px 14px;
+    font-size:12px;
+    color:var(--ink-soft);
+    background:var(--panel-2);
+    margin-top:14px;
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <span class="mark"></span>
+    <h1>GridVeil</h1>
+    <span class="sub">prototype · load forecasting &amp; privacy-preserving analytics</span>
+  </div>
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-page="overview">Libya Overview</button>
+    <button class="tab" data-page="forecast">Load Forecast</button>
+    <button class="tab" data-page="anomalies">Anomalies</button>
+    <button class="tab" data-page="privacy">Privacy</button>
+  </div>
+</div>
+
+<main>
+
+  <!-- PAGE 1: LIBYA OVERVIEW -->
+  <section class="page active" id="page-overview">
+    <div class="page-head">
+      <p class="eyebrow">Grid context</p>
+      <h2>Libya's electricity system</h2>
+      <p>Public statistics on generation, mix, and renewables — the real-world context this system is built for. Libya has no publicly available granular (hourly/10-minute) load data, which is why the modeling work runs on a proxy dataset (see Load Forecast).</p>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat">
+        <div class="label">Installed capacity</div>
+        <div class="value">11,239<span class="unit">MW</span></div>
+        <div class="note">2023 · Africa Energy Portal</div>
+      </div>
+      <div class="stat copper">
+        <div class="label">Consumption</div>
+        <div class="value">26.7<span class="unit">bn kWh</span></div>
+        <div class="note">2023 · rising to 27.8bn in 2024</div>
+      </div>
+      <div class="stat">
+        <div class="label">Electrification rate</div>
+        <div class="value">100<span class="unit">%</span></div>
+        <div class="note">2019 · CIA World Factbook</div>
+      </div>
+      <div class="stat navy">
+        <div class="label">Renewable capacity</div>
+        <div class="value">~6<span class="unit">MW</span></div>
+        <div class="note">2022 · target 22% by 2030</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="panel">
+        <h3>Electricity generation mix</h3>
+        <p class="desc">Share of net electricity generation by source, 2022</p>
+        <div id="mix-chart"></div>
+        <div class="source-note">Source: U.S. Energy Information Administration, International Energy Statistics. Libya's electricity generation remains over 97% fossil-fuel dependent, split between gas (~71%) and oil (~29%); low-carbon sources (solar, hydro) contribute well under 1%.</div>
+      </div>
+      <div class="panel">
+        <h3>System notes</h3>
+        <p class="desc">Structural facts relevant to modeling</p>
+        <ul style="padding-left:18px;margin:0;font-size:13px;line-height:1.9;color:var(--ink);">
+          <li>GECOL is the sole, fully state-owned utility — generation, transmission, distribution and sales.</li>
+          <li>Generation capacity reportedly reached a record 8,200 MW in 2023, against peak demand of 5,000–6,000 MW.</li>
+          <li>Distribution efficiency ~71% (2020) — around 29% of distributed electricity is lost, per techno-economic modeling assumptions.</li>
+          <li>Renewable target: 7% by 2020, 10% by 2025 (Renewable Energy Strategic Plan, 2013).</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="panel">
+        <h3>Named generation fleet</h3>
+        <p class="desc">12 major plants tracked in Libya's energy-system starter data kit, by commissioning year</p>
+        <div class="fleet-list">
+          <div class="fleet-row oil"><div class="name">West Tripoli</div><div class="bar-track"><div class="bar-fill" style="width:13%;"></div></div><div class="capacity">185 <small>MW</small></div></div>
+          <div class="fleet-row"><div class="name">North Benghazi</div><div class="bar-track"><div class="bar-fill" style="width:72%;"></div></div><div class="capacity">1,041 <small>MW</small></div></div>
+          <div class="fleet-row oil"><div class="name">Derna Steam</div><div class="bar-track"><div class="bar-fill" style="width:5%;"></div></div><div class="capacity">65 <small>MW</small></div></div>
+          <div class="fleet-row oil"><div class="name">Tobruk Steam</div><div class="bar-track"><div class="bar-fill" style="width:5%;"></div></div><div class="capacity">65 <small>MW</small></div></div>
+          <div class="fleet-row"><div class="name">Zuenita</div><div class="bar-track"><div class="bar-fill" style="width:23%;"></div></div><div class="capacity">335 <small>MW</small></div></div>
+          <div class="fleet-row"><div class="name">South Tripoli</div><div class="bar-track"><div class="bar-fill" style="width:10%;"></div></div><div class="capacity">147 <small>MW</small></div></div>
+          <div class="fleet-row"><div class="name">Al Khums</div><div class="bar-track"><div class="bar-fill" style="width:69%;"></div></div><div class="capacity">999 <small>MW</small></div></div>
+          <div class="fleet-row"><div class="name">Double Corner</div><div class="bar-track"><div class="bar-fill" style="width:33%;"></div></div><div class="capacity">480 <small>MW</small></div></div>
+          <div class="fleet-row"><div class="name">Az Zawiyah</div><div class="bar-track"><div class="bar-fill" style="width:100%;"></div></div><div class="capacity">1,440 <small>MW</small></div></div>
+          <div class="fleet-row"><div class="name">Western Mountain</div><div class="bar-track"><div class="bar-fill" style="width:43%;"></div></div><div class="capacity">624 <small>MW</small></div></div>
+          <div class="fleet-row"><div class="name">Misrata</div><div class="bar-track"><div class="bar-fill" style="width:35%;"></div></div><div class="capacity">500 <small>MW</small></div></div>
+          <div class="fleet-row"><div class="name">Gulf of Sirte</div><div class="bar-track"><div class="bar-fill" style="width:24%;"></div></div><div class="capacity">350 <small>MW</small></div></div>
+        </div>
+        <div class="legend-row">
+          <span><i style="background:var(--navy)"></i>Natural gas</span>
+          <span><i style="background:var(--rust)"></i>Heavy fuel oil</span>
+        </div>
+        <div class="source-note">6,231 MW of named capacity, averaging ~29 years old. The oldest units (West Tripoli, 1976; North Benghazi, 1979) predate most of the grid's gas-fired expansion in the 1990s–2000s. Source: CCG/OSeMOSYS Starter Data Kit for Libya (Zenodo, CC-BY 4.0).</div>
+      </div>
+      <div class="panel">
+        <h3>Renewables getting cheaper</h3>
+        <p class="desc">Modeled capital cost, utility-scale solar PV vs. onshore wind, 2015–2050</p>
+        <div class="cost-summary">
+          <div class="cost-row solar"><div class="label">Solar PV</div><div class="bar-track"><div class="bar-fill" style="width:33%;"></div></div><div class="value">$723/kW</div></div>
+          <div class="cost-row wind"><div class="label">Onshore wind</div><div class="bar-track"><div class="bar-fill" style="width:47%;"></div></div><div class="value">$933/kW</div></div>
+        </div>
+        <div class="cost-years"><span>2015</span><span>2020</span><span>2025</span><span>2030</span><span>2040</span><span>2050</span></div>
+        <div class="source-note">By 2050, solar falls 67% from $2,165/kW and onshore wind falls 53% from $1,985/kW.</div>
+        <div class="source-note">Solar PV capital cost falls ~67% (from $2,165/kW to $723/kW); onshore wind ~53% (from $1,985/kW to $933/kW). Same starter data kit — cost assumptions used to model Libya's 2020–2050 energy transition scenarios.</div>
+      </div>
+    </div>
+
+    <div class="caveat">This page uses real, cited public statistics and modeling data about Libya's energy system. It is descriptive context — no forecasting or anomaly detection runs on it, since no granular Libyan time series is publicly available.</div>
+  </section>
+
+  <!-- PAGE 2: LOAD FORECAST -->
+  <section class="page" id="page-forecast">
+    <div class="page-head">
+      <p class="eyebrow">Forecasting model</p>
+      <h2>Load forecast</h2>
+      <p>A Hybrid CNN-LSTM-Attention model trained on the trailing 4 hours of 10-minute-resampled Tetouan (Morocco) load data — the proxy dataset used to develop and validate the forecasting approach before applying it to Libyan-pattern data.</p>
+    </div>
+
+    <div class="stat-grid" style="grid-template-columns:repeat(3,1fr);">
+      <div class="stat">
+        <div class="label">Next-hour predicted load</div>
+        <div class="value" id="next-hour-val">—</div>
+        <div class="note">Rolling 1-hour-ahead forecast</div>
+      </div>
+      <div class="stat copper">
+        <div class="label">Test-set error (MAPE)</div>
+        <div class="value" id="mape-val">—<span class="unit">%</span></div>
+        <div class="note">Hybrid CNN-LSTM-Attention - significant improvement over baseline</div>
+      </div>
+      <div class="stat navy">
+        <div class="label">Model inputs</div>
+        <div class="value" style="font-size:14px;line-height:1.5;">Trailing 24 (10-minute) load values (4 hours)</div>
+        <div class="note">Hybrid CNN-LSTM-Attention architecture</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Model Training Performance — Loss Curve</h3>
+      <p class="desc">Dec 24–30, 2017 · hourly · Hybrid CNN-LSTM-Attention forecast</p>
+      <div class="chart-wrap"><img src="../results/training_loss_curve.png" alt="Training Loss Curve" style="width: 100%; max-height: 380px; object-fit: contain; border-radius: 8px; margin-top: 15px;"></div>
+      <div class="legend-row">
+        <span><i style="background:var(--navy)"></i>Actual load</span>
+        <span><i style="background:var(--copper)"></i>Predicted load</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Baseline comparison</h3>
+      <p class="desc">Same test set, same 70/15/15 strict chronological split</p>
+      <div class="compare-grid">
+        <div class="compare-card dim">
+          <h4>Random Forest baseline (Step 7)</h4>
+          <div class="big">5.77%</div>
+        </div>
+        <div class="compare-card priv">
+          <h4>Hybrid CNN-LSTM-Attention, 4h lookback</h4>
+          <div class="big" id="mape-compare-val">—%</div>
+        </div>
+      </div>
+      <p class="footnote">The Hybrid model significantly cuts test-set MAPE relative to baselines by leveraging short-term local patterns and long-term attention weights. <em>Note: the 5.77% Random Forest figure has no corresponding training script in this repository — confirm it before citing it in the final submission.</em></p>
+    </div>
+
+    <div class="caveat">Anomaly thresholds on the next page are recalibrated against this LSTM's tighter error distribution — they are not the same cutoffs used for the earlier Random Forest baseline.</div>
+  </section>
+
+  <!-- PAGE 3: ANOMALIES -->
+  <section class="page" id="page-anomalies">
+    <div class="page-head">
+      <p class="eyebrow">Deviation detection</p>
+      <h2>Anomalies</h2>
+      <p>Flags hours where actual load diverged from the forecast by more than expected. This detects <strong>unusual consumption behavior</strong> relative to the model — it does not, by itself, confirm an outage, fault, or blackout.</p>
+    </div>
+
+    <div class="status-legend">
+      <div class="status-card">
+        <span class="dot" style="background:var(--teal)"></span>Normal
+        <div class="count" id="count-normal">—</div>
+        <div class="pct" id="pct-normal">— of test-set hours</div>
+      </div>
+      <div class="status-card">
+        <span class="dot" style="background:var(--copper)"></span>Unusual
+        <div class="count" id="count-unusual">—</div>
+        <div class="pct" id="pct-unusual">— of test-set hours</div>
+      </div>
+      <div class="status-card">
+        <span class="dot" style="background:var(--rust)"></span>High deviation
+        <div class="count" id="count-highdev">—</div>
+        <div class="pct" id="pct-highdev">Extreme peaks</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Recent flagged hours</h3>
+      <p class="desc">Actual flagged hours from the embedded test-set results (not illustrative examples)</p>
+      <table>
+        <thead>
+          <tr><th>Time</th><th style="text-align:right">Expected</th><th style="text-align:right">Actual</th><th style="text-align:right">Error</th><th>Status</th></tr>
+        </thead>
+        <tbody id="anomaly-tbody">
+        </tbody>
+      </table>
+    </div>
+
+    <div class="caveat" id="threshold-caveat">Thresholds are calculated dynamically using the 95th (Unusual) and 99th (High deviation) percentiles of the Hybrid model's training absolute errors, expressed in real MW after inverse-scaling — not the raw z-scored fit values, and not the train/validation/test split sizes.</div>
+  </section>
+
+  <!-- PAGE 4: PRIVACY -->
+  <section class="page" id="page-privacy">
+    <div class="page-head">
+      <p class="eyebrow">Privacy experiment</p>
+      <h2>Synthetic data &amp; differential privacy</h2>
+      <p>Libya has no public granular load data, so a synthetic Libyan-pattern dataset (documented seasonal/diurnal shape, not real measurements) stands in for it — demonstrating the pipeline doesn't depend on real household data, and quantifying what privacy noise costs in accuracy.</p>
+    </div>
+
+    <div class="panel">
+      <h3>Pipeline</h3>
+      <div class="flow">
+        <div class="flow-step">Synthetic Libya load<br>(documented pattern)</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">Laplace noise<br>ε = 1.0</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">Privacy-protected series</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">Same forecasting model</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">Forecast error compared</div>
+      </div>
+
+      <div class="compare-grid">
+        <div class="compare-card dim">
+          <h4>Original synthetic data — MAPE</h4>
+          <div class="big">5.57%</div>
+        </div>
+        <div class="compare-card priv">
+          <h4>Privacy-protected data — MAPE</h4>
+          <div class="big">7.24%</div>
+        </div>
+      </div>
+      <p class="footnote">Accuracy cost of privacy: <strong>+1.67 percentage points</strong> of forecast error at ε = 1.0 (Laplace mechanism, noise scale ≈ 42 MW on a series averaging ~4,180 MW). Same Hybrid CNN-LSTM-Attention architecture trained on both series, 80/20 chronological split.</p>
+    </div>
+
+    <div class="panel">
+      <h3>Research question</h3>
+      <p style="font-size:13.5px;line-height:1.6;margin:0;">How much analytical accuracy is lost when differential-privacy noise is introduced to protect individual-level consumption data? At ε = 1.0, this experiment shows a ~30% relative increase in forecast error (5.57% → 7.24% MAPE) — a more noticeable tradeoff than a looser privacy budget would give, since noise scale is fixed relative to the series' mean regardless of ε. Mapping the tradeoff curve across a range of ε values (0.1 to 5, say) would show where the accuracy cost becomes acceptable for a given use case.</p>
+    </div>
+
+    <div class="caveat">The synthetic dataset's seasonal amplitude and diurnal shape are modeled on documented Libyan characteristics (summer AC-driven peaks, evening demand peak), scaled to GECOL's cited 2023 demand range of 5,000–6,000 MW — it is explicitly not real measured data, and is labelled as such throughout.</div>
+  </section>
+
+</main>
+
+<script>
+  // ---- tab switching ----
+  document.querySelectorAll('.tab').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('page-'+btn.dataset.page).classList.add('active');
+    });
+  });
+
+  // ---- embedded data ----
+  const DATA = {"forecast_labels": ["12/24 00h", "12/24 01h", "12/24 02h", "12/24 03h", "12/24 04h", "12/24 05h", "12/24 06h", "12/24 07h", "12/24 08h", "12/24 09h", "12/24 10h", "12/24 11h", "12/24 12h", "12/24 13h", "12/24 14h", "12/24 15h", "12/24 16h", "12/24 17h", "12/24 18h", "12/24 19h", "12/24 20h", "12/24 21h", "12/24 22h", "12/24 23h", "12/25 00h", "12/25 01h", "12/25 02h", "12/25 03h", "12/25 04h", "12/25 05h", "12/25 06h", "12/25 07h", "12/25 08h", "12/25 09h", "12/25 10h", "12/25 11h", "12/25 12h", "12/25 13h", "12/25 14h", "12/25 15h", "12/25 16h", "12/25 17h", "12/25 18h", "12/25 19h", "12/25 20h", "12/25 21h", "12/25 22h", "12/25 23h", "12/26 00h", "12/26 01h", "12/26 02h", "12/26 03h", "12/26 04h", "12/26 05h", "12/26 06h", "12/26 07h", "12/26 08h", "12/26 09h", "12/26 10h", "12/26 11h", "12/26 12h", "12/26 13h", "12/26 14h", "12/26 15h", "12/26 16h", "12/26 17h", "12/26 18h", "12/26 19h", "12/26 20h", "12/26 21h", "12/26 22h", "12/26 23h", "12/27 00h", "12/27 01h", "12/27 02h", "12/27 03h", "12/27 04h", "12/27 05h", "12/27 06h", "12/27 07h", "12/27 08h", "12/27 09h", "12/27 10h", "12/27 11h", "12/27 12h", "12/27 13h", "12/27 14h", "12/27 15h", "12/27 16h", "12/27 17h", "12/27 18h", "12/27 19h", "12/27 20h", "12/27 21h", "12/27 22h", "12/27 23h", "12/28 00h", "12/28 01h", "12/28 02h", "12/28 03h", "12/28 04h", "12/28 05h", "12/28 06h", "12/28 07h", "12/28 08h", "12/28 09h", "12/28 10h", "12/28 11h", "12/28 12h", "12/28 13h", "12/28 14h", "12/28 15h", "12/28 16h", "12/28 17h", "12/28 18h", "12/28 19h", "12/28 20h", "12/28 21h", "12/28 22h", "12/28 23h", "12/29 00h", "12/29 01h", "12/29 02h", "12/29 03h", "12/29 04h", "12/29 05h", "12/29 06h", "12/29 07h", "12/29 08h", "12/29 09h", "12/29 10h", "12/29 11h", "12/29 12h", "12/29 13h", "12/29 14h", "12/29 15h", "12/29 16h", "12/29 17h", "12/29 18h", "12/29 19h", "12/29 20h", "12/29 21h", "12/29 22h", "12/29 23h", "12/30 00h", "12/30 01h", "12/30 02h", "12/30 03h", "12/30 04h", "12/30 05h", "12/30 06h", "12/30 07h", "12/30 08h", "12/30 09h", "12/30 10h", "12/30 11h", "12/30 12h", "12/30 13h", "12/30 14h", "12/30 15h", "12/30 16h", "12/30 17h", "12/30 18h", "12/30 19h", "12/30 20h", "12/30 21h", "12/30 22h", "12/30 23h"], "forecast_actual": [59583, 52489, 47938, 46317, 45619, 46214, 46408, 38683, 40766, 47291, 54544, 58885, 61308, 61784, 61611, 60238, 59746, 75068, 83830, 85451, 85831, 82296, 75764, 66660, 57982, 51964, 48592, 47390, 47080, 48937, 52141, 49926, 52058, 57557, 64075, 67515, 69242, 69854, 69620, 68887, 68927, 84362, 91430, 90195, 89497, 85651, 77332, 67202, 58409, 52469, 49417, 48020, 47435, 49198, 51991, 49295, 51848, 58420, 64086, 67373, 70363, 71572, 71358, 70928, 69729, 84271, 91490, 90701, 89687, 85073, 77474, 67381, 58493, 52219, 48803, 47280, 46968, 48688, 51721, 50203, 52973, 59757, 65427, 70663, 72264, 71722, 70703, 70061, 70341, 84985, 91628, 90474, 89941, 85609, 78273, 67348, 58604, 52551, 49257, 47539, 47269, 49050, 52115, 49452, 51682, 57850, 63850, 67371, 69743, 70012, 69452, 69463, 69918, 84788, 90938, 89622, 89369, 86398, 79339, 68831, 59841, 53905, 49867, 48172, 47514, 49083, 51988, 49535, 51460, 57865, 63526, 67560, 66969, 67196, 66692, 65828, 65474, 79768, 88956, 87950, 87616, 84662, 77947, 70428, 60985, 53578, 49633, 47532, 47025, 48105, 50680, 45183, 47545, 55712, 61986, 65838, 67204, 67151, 66594, 64850, 64303, 78899, 87481, 86938, 86028, 82725, 78086, 69965], "forecast_pred": [58476, 53040, 50484, 49342, 49088, 48169, 46422, 47848, 44191, 48163, 54317, 59309, 62088, 62219, 60537, 59218, 58928, 70530, 85726, 87686, 85850, 80650, 72676, 64119, 58110, 52332, 50163, 49120, 48854, 48572, 47949, 49937, 51397, 56434, 63125, 67833, 69802, 69221, 67952, 66953, 67126, 76255, 90628, 91362, 89326, 83875, 75019, 65464, 57629, 52357, 50242, 49719, 49747, 49197, 48425, 51121, 52788, 57600, 63482, 67629, 68815, 69009, 69026, 69122, 70477, 84149, 92717, 92831, 91023, 85806, 76700, 66575, 58083, 52595, 50304, 49658, 49703, 49189, 48080, 50793, 53532, 58501, 64444, 68755, 70769, 70703, 69837, 69112, 69641, 82994, 93522, 93632, 91715, 86566, 77568, 66918, 57906, 52263, 50110, 49579, 49610, 48965, 48041, 51716, 53388, 57648, 63137, 67750, 68704, 68704, 68042, 67674, 69057, 83714, 92566, 92559, 90696, 85499, 76627, 66693, 58546, 53032, 50584, 49774, 49865, 49645, 48682, 50385, 52571, 57134, 63184, 67339, 69298, 67365, 65823, 64936, 65458, 78065, 90399, 91663, 89942, 85262, 76612, 67425, 59442, 54080, 51064, 49935, 49431, 48651, 47716, 50957, 49719, 54212, 61502, 65805, 68022, 67129, 65487, 64280, 63875, 72413, 89320, 91173, 89730, 85371, 76897, 68095], "anomaly_table": [{"time": "Dec 29, 06:00", "expected": 48682, "actual": 51988, "pct_error": 6.4, "status": "Unusual"}, {"time": "Dec 30, 03:00", "expected": 49935, "actual": 47532, "pct_error": 5.1, "status": "Unusual"}, {"time": "Dec 30, 04:00", "expected": 49431, "actual": 47025, "pct_error": 5.1, "status": "Unusual"}, {"time": "Dec 30, 06:00", "expected": 47716, "actual": 50680, "pct_error": 5.8, "status": "Unusual"}, {"time": "Dec 30, 07:00", "expected": 50957, "actual": 45183, "pct_error": 12.8, "status": "High deviation"}, {"time": "Dec 30, 17:00", "expected": 72413, "actual": 78899, "pct_error": 8.2, "status": "Unusual"}, {"time": "Dec 30, 20:00", "expected": 89730, "actual": 86028, "pct_error": 4.3, "status": "Normal"}, {"time": "Dec 30, 21:00", "expected": 85371, "actual": 82725, "pct_error": 3.2, "status": "Normal"}, {"time": "Dec 30, 22:00", "expected": 76897, "actual": 78086, "pct_error": 1.5, "status": "Normal"}, {"time": "Dec 30, 23:00", "expected": 68095, "actual": 69965, "pct_error": 2.7, "status": "Normal"}], "status_counts": {"Normal": 1569, "Unusual": 151, "High deviation": 28}, "next_hour_pred": 68095, "mape": 2.42};
+
+  const OVERVIEW = {"fleet": [{"name": "WestTripoli", "year": 1976, "mw": 185, "fuel": "Heavy fuel oil"}, {"name": "NorthBenghazi", "year": 1979, "mw": 1041, "fuel": "Natural gas"}, {"name": "DernaSteamSta", "year": 1985, "mw": 65, "fuel": "Heavy fuel oil"}, {"name": "TobrukSteamSt", "year": 1985, "mw": 65, "fuel": "Heavy fuel oil"}, {"name": "Zuenita", "year": 1994, "mw": 335, "fuel": "Natural gas"}, {"name": "SouthTripoli", "year": 1994, "mw": 147, "fuel": "Natural gas"}, {"name": "AlKhums", "year": 1995, "mw": 999, "fuel": "Natural gas"}, {"name": "DoubleCornerP", "year": 2000, "mw": 480, "fuel": "Natural gas"}, {"name": "AzZawiyah", "year": 2003, "mw": 1440, "fuel": "Natural gas"}, {"name": "WesternMountai", "year": 2005, "mw": 624, "fuel": "Natural gas"}, {"name": "Misrata", "year": 2010, "mw": 500, "fuel": "Natural gas"}, {"name": "GulfofSirte", "year": 2016, "mw": 350, "fuel": "Natural gas"}], "total_named_mw": 6231, "oldest_year": 1976, "avg_age": 28.8, "solar_years": [2015, 2020, 2025, 2030, 2040, 2050], "solar_cost": [2165.0, 1378.0, 984.0, 886.0, 723.0, 723.0], "wind_years": [2015, 2020, 2025, 2030, 2040, 2050], "wind_cost": [1985.0, 1489.0, 1191.0, 1087.0, 933.0, 933.0]};
+
+  document.getElementById('next-hour-val').textContent = DATA.next_hour_pred.toLocaleString();
+
+  // ---- FIX (issues 3 & 4): every number below is read from DATA, the same
+  // object the chart uses, instead of being separately hand-typed. This makes
+  // it impossible for the visible cards/table to drift from what was computed.
+  (function populateFromData(){
+    document.getElementById('mape-val').innerHTML = DATA.mape.toFixed(2) + '<span class="unit">%</span>';
+    document.getElementById('mape-compare-val').textContent = DATA.mape.toFixed(2) + '%';
+
+    const counts = DATA.status_counts;
+    const total = counts.Normal + counts.Unusual + counts['High deviation'];
+    const pct = n => total ? ((n / total) * 100).toFixed(1) + '%' : '—';
+
+    document.getElementById('count-normal').textContent = counts.Normal.toLocaleString();
+    document.getElementById('pct-normal').textContent = pct(counts.Normal) + ' of test-set hours';
+    document.getElementById('count-unusual').textContent = counts.Unusual.toLocaleString();
+    document.getElementById('pct-unusual').textContent = pct(counts.Unusual) + ' of test-set hours';
+    document.getElementById('count-highdev').textContent = counts['High deviation'].toLocaleString();
+    document.getElementById('pct-highdev').textContent = pct(counts['High deviation']) + ' of test-set hours';
+
+    const tbody = document.getElementById('anomaly-tbody');
+    const statusClass = s => 'status-' + s.replace(/ /g, '-');
+    DATA.anomaly_table.forEach(row => {
+      const tr = document.createElement('tr');
+      const sign = row.actual >= row.expected ? '+' : '';
+      tr.innerHTML = `<td>${row.time}</td>` +
+        `<td class="num">${row.expected.toLocaleString()}</td>` +
+        `<td class="num">${row.actual.toLocaleString()}</td>` +
+        `<td class="num">${sign}${row.pct_error}%</td>` +
+        `<td><span class="status-pill ${statusClass(row.status)}">${row.status}</span></td>`;
+      tbody.appendChild(tr);
+    });
+
+    if (DATA.anomaly_threshold_mw != null) {
+      document.getElementById('threshold-caveat').textContent =
+        `Thresholds are calculated dynamically using the 95th (Unusual) and 99th ` +
+        `(High deviation) percentiles of the Hybrid model's training absolute errors, ` +
+        `in real MW after inverse-scaling (95th-pct threshold ≈ ${DATA.anomaly_threshold_mw.toLocaleString()} MW) ` +
+        `— not the raw z-scored fit values, and not the train/validation/test split sizes.`;
+    }
+  })();
+
+  // ---- generation mix (Step 1 overview, static real figures) ----
+  const mix = [
+    {name:'Natural gas', pct:70.9, color:'var(--navy)'},
+    {name:'Oil / petroleum', pct:29.0, color:'var(--copper)'},
+    {name:'Renewables', pct:0.1, color:'var(--teal)'}
+  ];
+  const mixEl = document.getElementById('mix-chart');
+  mix.forEach(m=>{
+    const row = document.createElement('div');
+    row.className='mix-row';
+    row.innerHTML = `<div class="name">${m.name}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.max(m.pct,1.2)}%;background:${m.color}"></div></div><div class="pct">${m.pct}%</div>`;
+    mixEl.appendChild(row);
+  });
+
+</script>
+
+</body>
+</html>
