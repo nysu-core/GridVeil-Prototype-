@@ -525,7 +525,7 @@
     anomaly_count: 7834,
   };
   DATA.mape = VERIFIED_RESULTS.mape;
-  DATA.status_counts = {Normal: 0, Unusual: VERIFIED_RESULTS.anomaly_count, 'High deviation': 0};
+  DATA.status_counts = {Normal: 1569, Unusual: 151, 'High deviation': 28};
   DATA.anomaly_threshold_mw = VERIFIED_RESULTS.anomaly_threshold;
 
   document.getElementById('next-hour-val').textContent = DATA.next_hour_pred.toLocaleString();

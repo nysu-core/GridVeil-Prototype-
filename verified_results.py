@@ -13,7 +13,7 @@ def load_verified_results(path=RESULTS_PATH):
     required = {
         "forecasting": ["mape_percent", "training_epochs"],
         "random_forest": ["mape_percent"],
-        "anomaly_detection": ["threshold", "anomalies"],
+        "anomaly_detection": ["threshold", "anomalies", "status_counts"],
         "differential_privacy": ["epsilon", "clean_mape_percent", "private_mape_percent"],
     }
     for section, fields in required.items():

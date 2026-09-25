@@ -17,7 +17,12 @@
   "anomaly_detection": {
     "threshold": 0.421,
     "threshold_units": "reported model-error scale",
-    "anomalies": 7834
+    "anomalies": 7834,
+    "status_counts": {
+      "Normal": 1569,
+      "Unusual": 151,
+      "High deviation": 28
+    }
   },
   "differential_privacy": {
     "dataset": "synthetic Libya-pattern series",
