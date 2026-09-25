@@ -116,9 +116,12 @@ python train.py
 python random_forest_baseline.py
 python dp_experiment.py --epsilon 1.0
 python sync_dashboard_data.py
+python verified_results.py
 ```
 
 `train.py` uses the 70/15/15 chronological split, 24-step lookback, inverse-scaled MW metrics, and 95th/99th percentile anomaly bands. `random_forest_baseline.py` provides a local same-pipeline baseline and writes `rf_results.json`. The supplied verified external run is recorded in `results/verified_report_results.json` with Hybrid MAPE `2.42%`, RF MAPE `5.77%`, threshold `0.421`, and `7,834` reported anomalies. `dp_experiment.py` uses the synthetic Libya series and an 80/20 chronological split, writing `dp_results.json`.
+
+`verified_results.py` validates that every reported metric required by the dashboard is present. The local artifacts retain their computed values and include a `verified_external` section linking them to the supplied checkpoint-based result set.
 
 ---
 

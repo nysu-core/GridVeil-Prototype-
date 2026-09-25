@@ -8,5 +8,11 @@
   "clean_mape_percent": 2.53053722340703,
   "private_mape_percent": 2.5499320010853572,
   "engine": "sklearn_random_forest_fallback",
-  "formal_end_to_end_dp": false
+  "formal_end_to_end_dp": false,
+  "verified_external": {
+    "clean_mape_percent": 5.57,
+    "private_mape_percent": 7.24,
+    "epsilon": 1.0,
+    "source": "results/verified_report_results.json"
+  }
 }
