@@ -403,14 +403,14 @@
       <div class="compare-grid">
         <div class="compare-card dim">
           <h4>Random Forest baseline (Step 7)</h4>
-          <div class="big">5.77%</div>
+          <div class="big">4.72%</div>
         </div>
         <div class="compare-card priv">
           <h4>Hybrid CNN-LSTM-Attention, 4h lookback</h4>
           <div class="big" id="mape-compare-val">—%</div>
         </div>
       </div>
-      <p class="footnote">Reported value from the supplied project document. The current reproducible hourly baseline is recorded separately in <code>rf_results.json</code>.</p>
+      <p class="footnote">Verified by <code>random_forest_baseline.py</code> using the hourly Tetouan feature file and a 70/15/15 chronological split. The generated artifact is <code>rf_results.json</code>.</p>
     </div>
 
     <div class="caveat">Anomaly thresholds on the next page are recalibrated against this LSTM's tighter error distribution — they are not the same cutoffs used for the earlier Random Forest baseline.</div>
@@ -482,14 +482,14 @@
       <div class="compare-grid">
         <div class="compare-card dim">
           <h4>Original synthetic data — MAPE</h4>
-          <div class="big">5.57%</div>
+          <div class="big">2.53%</div>
         </div>
         <div class="compare-card priv">
           <h4>Privacy-protected data — MAPE</h4>
-          <div class="big">7.24%</div>
+          <div class="big">2.55%</div>
         </div>
       </div>
-      <p class="footnote">Supplied document reports 5.57% original MAPE and 7.24% after Laplace noise at ε = 1.0, using an 80/20 chronological split. The implementation is in <code>dp_experiment.py</code>; these figures remain report references until the experiment completes successfully.</p>
+      <p class="footnote">Computed by <code>dp_experiment.py</code> on the synthetic Libya-pattern series with ε = 1.0 and an 80/20 chronological split. Current artifact: <code>dp_results.json</code>, generated with the sklearn fallback engine because TensorFlow is unavailable in this environment.</p>
     </div>
 
     <div class="panel">
@@ -518,15 +518,6 @@
 
   const OVERVIEW = {"fleet": [{"name": "WestTripoli", "year": 1976, "mw": 185, "fuel": "Heavy fuel oil"}, {"name": "NorthBenghazi", "year": 1979, "mw": 1041, "fuel": "Natural gas"}, {"name": "DernaSteamSta", "year": 1985, "mw": 65, "fuel": "Heavy fuel oil"}, {"name": "TobrukSteamSt", "year": 1985, "mw": 65, "fuel": "Heavy fuel oil"}, {"name": "Zuenita", "year": 1994, "mw": 335, "fuel": "Natural gas"}, {"name": "SouthTripoli", "year": 1994, "mw": 147, "fuel": "Natural gas"}, {"name": "AlKhums", "year": 1995, "mw": 999, "fuel": "Natural gas"}, {"name": "DoubleCornerP", "year": 2000, "mw": 480, "fuel": "Natural gas"}, {"name": "AzZawiyah", "year": 2003, "mw": 1440, "fuel": "Natural gas"}, {"name": "WesternMountai", "year": 2005, "mw": 624, "fuel": "Natural gas"}, {"name": "Misrata", "year": 2010, "mw": 500, "fuel": "Natural gas"}, {"name": "GulfofSirte", "year": 2016, "mw": 350, "fuel": "Natural gas"}], "total_named_mw": 6231, "oldest_year": 1976, "avg_age": 28.8, "solar_years": [2015, 2020, 2025, 2030, 2040, 2050], "solar_cost": [2165.0, 1378.0, 984.0, 886.0, 723.0, 723.0], "wind_years": [2015, 2020, 2025, 2030, 2040, 2050], "wind_cost": [1985.0, 1489.0, 1191.0, 1087.0, 933.0, 933.0]};
 
-  // Reference values from the supplied report; train.py remains the source of computed values.
-  const REPORT_REFERENCE = {
-    mape: 2.69,
-    anomaly_threshold: 0.421,
-    anomaly_count: 7834,
-  };
-  DATA.mape = REPORT_REFERENCE.mape;
-  DATA.status_counts = {Normal: 0, Unusual: REPORT_REFERENCE.anomaly_count, 'High deviation': 0};
-  DATA.anomaly_threshold_mw = REPORT_REFERENCE.anomaly_threshold;
   document.getElementById('next-hour-val').textContent = DATA.next_hour_pred.toLocaleString();
 
   // ---- FIX (issues 3 & 4): every number below is read from DATA, the same

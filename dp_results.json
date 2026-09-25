@@ -1,0 +1,12 @@
+{
+  "dataset": "C:\\Users\\us\\Downloads\\GridVeil_Project\\GridVeil_Project\\data\\synthetic\\Synthetic_Libya_Electricity.csv",
+  "split": "80/20 chronological",
+  "lookback_hours": 24,
+  "epsilon": 1.0,
+  "sensitivity_mw": 42.0,
+  "noise_scale_mw": 42.0,
+  "clean_mape_percent": 2.53053722340703,
+  "private_mape_percent": 2.5499320010853572,
+  "engine": "sklearn_random_forest_fallback",
+  "formal_end_to_end_dp": false
+}

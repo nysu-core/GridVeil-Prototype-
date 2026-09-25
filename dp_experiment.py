@@ -11,9 +11,14 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-import tensorflow as tf
 from sklearn.metrics import mean_absolute_percentage_error
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import StandardScaler
+
+try:
+    import tensorflow as tf
+except ImportError:
+    tf = None
 
 
 DATA_PATH = Path(__file__).parent / "data" / "synthetic" / "Synthetic_Libya_Electricity.csv"
@@ -46,6 +51,8 @@ def make_windows(dataframe):
 
 
 def build_model(input_shape, seed):
+    if tf is None:
+        return None
     tf.keras.utils.set_random_seed(seed)
     inputs = tf.keras.Input(shape=input_shape)
     encoded = tf.keras.layers.Conv1D(32, 3, activation="relu")(inputs)
@@ -69,8 +76,21 @@ def train_and_score(
     seed,
 ):
     model = build_model(train_features.shape[1:], seed)
-    model.fit(train_features, train_labels, epochs=epochs, batch_size=64, verbose=0)
-    predictions = model.predict(evaluation_features, batch_size=64, verbose=0).reshape(-1, 1)
+    if model is None:
+        estimator = RandomForestRegressor(
+            n_estimators=100,
+            random_state=seed,
+            n_jobs=-1,
+        )
+        estimator.fit(train_features.reshape(len(train_features), -1), train_labels)
+        predictions = estimator.predict(
+            evaluation_features.reshape(len(evaluation_features), -1)
+        ).reshape(-1, 1)
+    else:
+        model.fit(train_features, train_labels, epochs=epochs, batch_size=64, verbose=0)
+        predictions = model.predict(
+            evaluation_features, batch_size=64, verbose=0
+        ).reshape(-1, 1)
     actual_mw = target_scaler.inverse_transform(evaluation_labels.reshape(-1, 1))
     predicted_mw = target_scaler.inverse_transform(predictions)
     return mean_absolute_percentage_error(actual_mw, predicted_mw) * 100
@@ -122,6 +142,7 @@ def main():
         "noise_scale_mw": noise_scale_mw,
         "clean_mape_percent": clean_mape,
         "private_mape_percent": private_mape,
+        "engine": "tensorflow_cnn_lstm_attention" if tf is not None else "sklearn_random_forest_fallback",
         "formal_end_to_end_dp": False,
     }
     RESULTS_PATH.write_text(json.dumps(results, indent=2))
