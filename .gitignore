@@ -1,0 +1,7 @@
+GridVeil_Project/powerconsumption_private.csv
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.DS_Store
