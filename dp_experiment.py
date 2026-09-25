@@ -25,7 +25,7 @@ TRAIN_FRACTION = 0.80
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--epsilon", type=float, default=1.0)
-    parser.add_argument("--clip", type=float, default=3.0)
+    parser.add_argument("--sensitivity-mw", type=float, default=42.0)
     parser.add_argument("--epochs", type=int, default=50)
     parser.add_argument("--seed", type=int, default=42)
     return parser.parse_args()
@@ -78,8 +78,8 @@ def train_and_score(
 
 def main():
     args = parse_args()
-    if args.epsilon <= 0 or args.clip <= 0:
-        raise ValueError("epsilon and clip must be positive")
+    if args.epsilon <= 0 or args.sensitivity_mw <= 0:
+        raise ValueError("epsilon and sensitivity-mw must be positive")
 
     dataframe = pd.read_csv(DATA_PATH, parse_dates=["Datetime"]).sort_values("Datetime")
     split_row = int(len(dataframe) * TRAIN_FRACTION)
@@ -100,9 +100,11 @@ def main():
     scaled_test_labels = target_scaler.transform(test_labels.reshape(-1, 1)).reshape(-1)
 
     rng = np.random.default_rng(args.seed)
-    clipped_labels = np.clip(scaled_train_labels, -args.clip, args.clip)
-    noise_scale = 2 * args.clip / args.epsilon
-    noisy_labels = clipped_labels + rng.laplace(0.0, noise_scale, size=clipped_labels.shape)
+    noise_scale_mw = args.sensitivity_mw / args.epsilon
+    noisy_labels_mw = train_labels + rng.laplace(
+        0.0, noise_scale_mw, size=train_labels.shape
+    )
+    noisy_labels = target_scaler.transform(noisy_labels_mw.reshape(-1, 1)).reshape(-1)
     clean_mape = train_and_score(
         train_features, scaled_train_labels, test_features, scaled_test_labels,
         target_scaler, args.epochs, args.seed,
@@ -116,8 +118,8 @@ def main():
         "split": "80/20 chronological",
         "lookback_hours": SEQUENCE_LENGTH,
         "epsilon": args.epsilon,
-        "clip_standardized_label": args.clip,
-        "noise_scale_standardized": noise_scale,
+        "sensitivity_mw": args.sensitivity_mw,
+        "noise_scale_mw": noise_scale_mw,
         "clean_mape_percent": clean_mape,
         "private_mape_percent": private_mape,
         "formal_end_to_end_dp": False,
