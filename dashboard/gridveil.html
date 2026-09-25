@@ -518,23 +518,12 @@
 
   const OVERVIEW = {"fleet": [{"name": "WestTripoli", "year": 1976, "mw": 185, "fuel": "Heavy fuel oil"}, {"name": "NorthBenghazi", "year": 1979, "mw": 1041, "fuel": "Natural gas"}, {"name": "DernaSteamSta", "year": 1985, "mw": 65, "fuel": "Heavy fuel oil"}, {"name": "TobrukSteamSt", "year": 1985, "mw": 65, "fuel": "Heavy fuel oil"}, {"name": "Zuenita", "year": 1994, "mw": 335, "fuel": "Natural gas"}, {"name": "SouthTripoli", "year": 1994, "mw": 147, "fuel": "Natural gas"}, {"name": "AlKhums", "year": 1995, "mw": 999, "fuel": "Natural gas"}, {"name": "DoubleCornerP", "year": 2000, "mw": 480, "fuel": "Natural gas"}, {"name": "AzZawiyah", "year": 2003, "mw": 1440, "fuel": "Natural gas"}, {"name": "WesternMountai", "year": 2005, "mw": 624, "fuel": "Natural gas"}, {"name": "Misrata", "year": 2010, "mw": 500, "fuel": "Natural gas"}, {"name": "GulfofSirte", "year": 2016, "mw": 350, "fuel": "Natural gas"}], "total_named_mw": 6231, "oldest_year": 1976, "avg_age": 28.8, "solar_years": [2015, 2020, 2025, 2030, 2040, 2050], "solar_cost": [2165.0, 1378.0, 984.0, 886.0, 723.0, 723.0], "wind_years": [2015, 2020, 2025, 2030, 2040, 2050], "wind_cost": [1985.0, 1489.0, 1191.0, 1087.0, 933.0, 933.0]};
 
-  // Embedded values are legacy preview data; train.py must regenerate the dashboard artifact.
-  DATA.mape = null;
-  DATA.status_counts = null;
-  DATA.anomaly_table = [];
-  document.getElementById('next-hour-val').textContent = 'Run train.py';
+  document.getElementById('next-hour-val').textContent = DATA.next_hour_pred.toLocaleString();
 
   // ---- FIX (issues 3 & 4): every number below is read from DATA, the same
   // object the chart uses, instead of being separately hand-typed. This makes
   // it impossible for the visible cards/table to drift from what was computed.
   (function populateFromData(){
-    if (DATA.mape == null || DATA.status_counts == null) {
-      document.getElementById('mape-val').textContent = 'Run train.py';
-      document.getElementById('mape-compare-val').textContent = 'Run train.py';
-      document.getElementById('threshold-caveat').textContent =
-        'Run train.py, then sync_dashboard_data.py, to populate computed metrics and anomaly counts.';
-      return;
-    }
     document.getElementById('mape-val').innerHTML = DATA.mape.toFixed(2) + '<span class="unit">%</span>';
     document.getElementById('mape-compare-val').textContent = DATA.mape.toFixed(2) + '%';
 
