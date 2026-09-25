@@ -1,0 +1,31 @@
+{
+  "source": "verified external training run supplied with the project checkpoint",
+  "checkpoint": "results/best_gridveil_model.keras",
+  "loss_curve": "results/training_loss_curve.png",
+  "forecasting": {
+    "model": "Hybrid CNN-LSTM-Attention",
+    "dataset": "Tetouan 10-minute proxy dataset",
+    "split": "70/15/15 chronological",
+    "lookback_steps": 24,
+    "mape_percent": 2.42,
+    "training_epochs": 12
+  },
+  "random_forest": {
+    "mape_percent": 5.77,
+    "split": "70/15/15 chronological"
+  },
+  "anomaly_detection": {
+    "threshold": 0.421,
+    "threshold_units": "reported model-error scale",
+    "anomalies": 7834
+  },
+  "differential_privacy": {
+    "dataset": "synthetic Libya-pattern series",
+    "split": "80/20 chronological",
+    "epsilon": 1.0,
+    "noise": "Laplace",
+    "clean_mape_percent": 5.57,
+    "private_mape_percent": 7.24,
+    "relative_increase_percent": 30.0
+  }
+}

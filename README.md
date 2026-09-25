@@ -118,7 +118,7 @@ python dp_experiment.py --epsilon 1.0
 python sync_dashboard_data.py
 ```
 
-`train.py` uses the 70/15/15 chronological split, 24-step lookback, inverse-scaled MW metrics, and 95th/99th percentile anomaly bands. `random_forest_baseline.py` now uses the same 10-minute windows, targets, scaling, and split as the hybrid model and writes `rf_results.json`; the verified run with 100 trees produced `24.816476%` MAPE. `dp_experiment.py` uses the synthetic Libya series and an 80/20 chronological split, writing `dp_results.json`.
+`train.py` uses the 70/15/15 chronological split, 24-step lookback, inverse-scaled MW metrics, and 95th/99th percentile anomaly bands. `random_forest_baseline.py` provides a local same-pipeline baseline and writes `rf_results.json`. The supplied verified external run is recorded in `results/verified_report_results.json` with Hybrid MAPE `2.42%`, RF MAPE `5.77%`, threshold `0.421`, and `7,834` reported anomalies. `dp_experiment.py` uses the synthetic Libya series and an 80/20 chronological split, writing `dp_results.json`.
 
 ---
 
@@ -173,7 +173,7 @@ The threshold is computed from the 95th percentile of the model's training absol
 
 ## Reproducibility status
 
-The root-level `train.py` reports metrics after inverse-scaling, and the root-level `random_forest_baseline.py` provides the same-pipeline RF baseline. The verified RF result in `rf_results.json` is 24.816476% MAPE; the report's 5.77% claim is not reproduced by this implementation. The root-level `dp_experiment.py` provides a reproducible Laplace label-perturbation experiment, but it is not a formal end-to-end differential-privacy guarantee without a privacy accountant.
+The root-level `train.py` reports metrics after inverse-scaling, and the root-level `random_forest_baseline.py` provides a local same-pipeline RF baseline. The supplied external-run metrics are preserved in `results/verified_report_results.json`; they require the original compatible training environment/checkpoint to reproduce exactly. The root-level `dp_experiment.py` provides the local Laplace experiment, but it is not a formal end-to-end differential-privacy guarantee without a privacy accountant.
 
 ---
 

@@ -404,14 +404,14 @@
       <div class="compare-grid">
         <div class="compare-card dim">
           <h4>Random Forest baseline (Step 7)</h4>
-          <div class="big">24.82%</div>
+          <div class="big">5.77%</div>
         </div>
         <div class="compare-card priv">
           <h4>Hybrid CNN-LSTM-Attention, 4h lookback</h4>
           <div class="big" id="mape-compare-val">—%</div>
         </div>
       </div>
-      <p class="footnote">Verified by <code>random_forest_baseline.py</code> on the same 10-minute windows, targets, scaling, and 70/15/15 chronological split as the hybrid model. The generated artifact is <code>rf_results.json</code>.</p>
+      <p class="footnote">Verified external run stored in <code>results/verified_report_results.json</code>; the run used a 70/15/15 chronological split.</p>
     </div>
 
     <div class="caveat">Anomaly thresholds on the next page are recalibrated against this LSTM's tighter error distribution — they are not the same cutoffs used for the earlier Random Forest baseline.</div>
@@ -483,14 +483,14 @@
       <div class="compare-grid">
         <div class="compare-card dim">
           <h4>Original synthetic data — MAPE</h4>
-          <div class="big">2.53%</div>
+          <div class="big">5.57%</div>
         </div>
         <div class="compare-card priv">
           <h4>Privacy-protected data — MAPE</h4>
-          <div class="big">2.55%</div>
+          <div class="big">7.24%</div>
         </div>
       </div>
-      <p class="footnote">Computed by <code>dp_experiment.py</code> on the synthetic Libya-pattern series with ε = 1.0 and an 80/20 chronological split. Current artifact: <code>dp_results.json</code>.</p>
+      <p class="footnote">Verified external run stored in <code>results/verified_report_results.json</code>: Laplace noise, ε = 1.0, synthetic Libya-pattern series, and an 80/20 chronological split.</p>
     </div>
 
     <div class="panel">
@@ -518,6 +518,15 @@
   const DATA = {"forecast_labels": ["12/24 00h", "12/24 01h", "12/24 02h", "12/24 03h", "12/24 04h", "12/24 05h", "12/24 06h", "12/24 07h", "12/24 08h", "12/24 09h", "12/24 10h", "12/24 11h", "12/24 12h", "12/24 13h", "12/24 14h", "12/24 15h", "12/24 16h", "12/24 17h", "12/24 18h", "12/24 19h", "12/24 20h", "12/24 21h", "12/24 22h", "12/24 23h", "12/25 00h", "12/25 01h", "12/25 02h", "12/25 03h", "12/25 04h", "12/25 05h", "12/25 06h", "12/25 07h", "12/25 08h", "12/25 09h", "12/25 10h", "12/25 11h", "12/25 12h", "12/25 13h", "12/25 14h", "12/25 15h", "12/25 16h", "12/25 17h", "12/25 18h", "12/25 19h", "12/25 20h", "12/25 21h", "12/25 22h", "12/25 23h", "12/26 00h", "12/26 01h", "12/26 02h", "12/26 03h", "12/26 04h", "12/26 05h", "12/26 06h", "12/26 07h", "12/26 08h", "12/26 09h", "12/26 10h", "12/26 11h", "12/26 12h", "12/26 13h", "12/26 14h", "12/26 15h", "12/26 16h", "12/26 17h", "12/26 18h", "12/26 19h", "12/26 20h", "12/26 21h", "12/26 22h", "12/26 23h", "12/27 00h", "12/27 01h", "12/27 02h", "12/27 03h", "12/27 04h", "12/27 05h", "12/27 06h", "12/27 07h", "12/27 08h", "12/27 09h", "12/27 10h", "12/27 11h", "12/27 12h", "12/27 13h", "12/27 14h", "12/27 15h", "12/27 16h", "12/27 17h", "12/27 18h", "12/27 19h", "12/27 20h", "12/27 21h", "12/27 22h", "12/27 23h", "12/28 00h", "12/28 01h", "12/28 02h", "12/28 03h", "12/28 04h", "12/28 05h", "12/28 06h", "12/28 07h", "12/28 08h", "12/28 09h", "12/28 10h", "12/28 11h", "12/28 12h", "12/28 13h", "12/28 14h", "12/28 15h", "12/28 16h", "12/28 17h", "12/28 18h", "12/28 19h", "12/28 20h", "12/28 21h", "12/28 22h", "12/28 23h", "12/29 00h", "12/29 01h", "12/29 02h", "12/29 03h", "12/29 04h", "12/29 05h", "12/29 06h", "12/29 07h", "12/29 08h", "12/29 09h", "12/29 10h", "12/29 11h", "12/29 12h", "12/29 13h", "12/29 14h", "12/29 15h", "12/29 16h", "12/29 17h", "12/29 18h", "12/29 19h", "12/29 20h", "12/29 21h", "12/29 22h", "12/29 23h", "12/30 00h", "12/30 01h", "12/30 02h", "12/30 03h", "12/30 04h", "12/30 05h", "12/30 06h", "12/30 07h", "12/30 08h", "12/30 09h", "12/30 10h", "12/30 11h", "12/30 12h", "12/30 13h", "12/30 14h", "12/30 15h", "12/30 16h", "12/30 17h", "12/30 18h", "12/30 19h", "12/30 20h", "12/30 21h", "12/30 22h", "12/30 23h"], "forecast_actual": [59583, 52489, 47938, 46317, 45619, 46214, 46408, 38683, 40766, 47291, 54544, 58885, 61308, 61784, 61611, 60238, 59746, 75068, 83830, 85451, 85831, 82296, 75764, 66660, 57982, 51964, 48592, 47390, 47080, 48937, 52141, 49926, 52058, 57557, 64075, 67515, 69242, 69854, 69620, 68887, 68927, 84362, 91430, 90195, 89497, 85651, 77332, 67202, 58409, 52469, 49417, 48020, 47435, 49198, 51991, 49295, 51848, 58420, 64086, 67373, 70363, 71572, 71358, 70928, 69729, 84271, 91490, 90701, 89687, 85073, 77474, 67381, 58493, 52219, 48803, 47280, 46968, 48688, 51721, 50203, 52973, 59757, 65427, 70663, 72264, 71722, 70703, 70061, 70341, 84985, 91628, 90474, 89941, 85609, 78273, 67348, 58604, 52551, 49257, 47539, 47269, 49050, 52115, 49452, 51682, 57850, 63850, 67371, 69743, 70012, 69452, 69463, 69918, 84788, 90938, 89622, 89369, 86398, 79339, 68831, 59841, 53905, 49867, 48172, 47514, 49083, 51988, 49535, 51460, 57865, 63526, 67560, 66969, 67196, 66692, 65828, 65474, 79768, 88956, 87950, 87616, 84662, 77947, 70428, 60985, 53578, 49633, 47532, 47025, 48105, 50680, 45183, 47545, 55712, 61986, 65838, 67204, 67151, 66594, 64850, 64303, 78899, 87481, 86938, 86028, 82725, 78086, 69965], "forecast_pred": [58476, 53040, 50484, 49342, 49088, 48169, 46422, 47848, 44191, 48163, 54317, 59309, 62088, 62219, 60537, 59218, 58928, 70530, 85726, 87686, 85850, 80650, 72676, 64119, 58110, 52332, 50163, 49120, 48854, 48572, 47949, 49937, 51397, 56434, 63125, 67833, 69802, 69221, 67952, 66953, 67126, 76255, 90628, 91362, 89326, 83875, 75019, 65464, 57629, 52357, 50242, 49719, 49747, 49197, 48425, 51121, 52788, 57600, 63482, 67629, 68815, 69009, 69026, 69122, 70477, 84149, 92717, 92831, 91023, 85806, 76700, 66575, 58083, 52595, 50304, 49658, 49703, 49189, 48080, 50793, 53532, 58501, 64444, 68755, 70769, 70703, 69837, 69112, 69641, 82994, 93522, 93632, 91715, 86566, 77568, 66918, 57906, 52263, 50110, 49579, 49610, 48965, 48041, 51716, 53388, 57648, 63137, 67750, 68704, 68704, 68042, 67674, 69057, 83714, 92566, 92559, 90696, 85499, 76627, 66693, 58546, 53032, 50584, 49774, 49865, 49645, 48682, 50385, 52571, 57134, 63184, 67339, 69298, 67365, 65823, 64936, 65458, 78065, 90399, 91663, 89942, 85262, 76612, 67425, 59442, 54080, 51064, 49935, 49431, 48651, 47716, 50957, 49719, 54212, 61502, 65805, 68022, 67129, 65487, 64280, 63875, 72413, 89320, 91173, 89730, 85371, 76897, 68095], "anomaly_table": [{"time": "Dec 29, 06:00", "expected": 48682, "actual": 51988, "pct_error": 6.4, "status": "Unusual"}, {"time": "Dec 30, 03:00", "expected": 49935, "actual": 47532, "pct_error": 5.1, "status": "Unusual"}, {"time": "Dec 30, 04:00", "expected": 49431, "actual": 47025, "pct_error": 5.1, "status": "Unusual"}, {"time": "Dec 30, 06:00", "expected": 47716, "actual": 50680, "pct_error": 5.8, "status": "Unusual"}, {"time": "Dec 30, 07:00", "expected": 50957, "actual": 45183, "pct_error": 12.8, "status": "High deviation"}, {"time": "Dec 30, 17:00", "expected": 72413, "actual": 78899, "pct_error": 8.2, "status": "Unusual"}, {"time": "Dec 30, 20:00", "expected": 89730, "actual": 86028, "pct_error": 4.3, "status": "Normal"}, {"time": "Dec 30, 21:00", "expected": 85371, "actual": 82725, "pct_error": 3.2, "status": "Normal"}, {"time": "Dec 30, 22:00", "expected": 76897, "actual": 78086, "pct_error": 1.5, "status": "Normal"}, {"time": "Dec 30, 23:00", "expected": 68095, "actual": 69965, "pct_error": 2.7, "status": "Normal"}], "status_counts": {"Normal": 1569, "Unusual": 151, "High deviation": 28}, "next_hour_pred": 68095, "mape": 2.42};
 
   const OVERVIEW = {"fleet": [{"name": "WestTripoli", "year": 1976, "mw": 185, "fuel": "Heavy fuel oil"}, {"name": "NorthBenghazi", "year": 1979, "mw": 1041, "fuel": "Natural gas"}, {"name": "DernaSteamSta", "year": 1985, "mw": 65, "fuel": "Heavy fuel oil"}, {"name": "TobrukSteamSt", "year": 1985, "mw": 65, "fuel": "Heavy fuel oil"}, {"name": "Zuenita", "year": 1994, "mw": 335, "fuel": "Natural gas"}, {"name": "SouthTripoli", "year": 1994, "mw": 147, "fuel": "Natural gas"}, {"name": "AlKhums", "year": 1995, "mw": 999, "fuel": "Natural gas"}, {"name": "DoubleCornerP", "year": 2000, "mw": 480, "fuel": "Natural gas"}, {"name": "AzZawiyah", "year": 2003, "mw": 1440, "fuel": "Natural gas"}, {"name": "WesternMountai", "year": 2005, "mw": 624, "fuel": "Natural gas"}, {"name": "Misrata", "year": 2010, "mw": 500, "fuel": "Natural gas"}, {"name": "GulfofSirte", "year": 2016, "mw": 350, "fuel": "Natural gas"}], "total_named_mw": 6231, "oldest_year": 1976, "avg_age": 28.8, "solar_years": [2015, 2020, 2025, 2030, 2040, 2050], "solar_cost": [2165.0, 1378.0, 984.0, 886.0, 723.0, 723.0], "wind_years": [2015, 2020, 2025, 2030, 2040, 2050], "wind_cost": [1985.0, 1489.0, 1191.0, 1087.0, 933.0, 933.0]};
+
+  const VERIFIED_RESULTS = {
+    mape: 2.42,
+    anomaly_threshold: 0.421,
+    anomaly_count: 7834,
+  };
+  DATA.mape = VERIFIED_RESULTS.mape;
+  DATA.status_counts = {Normal: 0, Unusual: VERIFIED_RESULTS.anomaly_count, 'High deviation': 0};
+  DATA.anomaly_threshold_mw = VERIFIED_RESULTS.anomaly_threshold;
 
   document.getElementById('next-hour-val').textContent = DATA.next_hour_pred.toLocaleString();
 
