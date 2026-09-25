@@ -2,26 +2,12 @@
   "model": "RandomForestRegressor",
   "random_state": 42,
   "n_estimators": 100,
-  "dataset": "C:\\Users\\us\\Downloads\\GridVeil_Project\\GridVeil_Project\\data\\tetouan\\Tetouan_Hourly_Features.csv",
+  "dataset": "C:\\Users\\us\\Downloads\\GridVeil_Project\\GridVeil_Project\\powerconsumption.csv",
   "split": "70/15/15 chronological",
-  "target": "Next_Hour_Load",
-  "features": [
-    "Temperature",
-    "Humidity",
-    "WindSpeed",
-    "GeneralDiffuseFlows",
-    "DiffuseFlows",
-    "PowerConsumption_Zone1",
-    "PowerConsumption_Zone2",
-    "PowerConsumption_Zone3",
-    "Total_Load",
-    "Hour",
-    "Day_of_Week",
-    "Month",
-    "Previous_Load"
-  ],
-  "mae_mw": 3004.205467571502,
-  "rmse_mw": 4194.796175193235,
-  "mape_percent": 4.72492925136758,
-  "r2": 0.9116592627642413
+  "lookback_steps": 24,
+  "target": "three zone loads at final timestep",
+  "mae_mw": 4205.362354794074,
+  "rmse_mw": 4863.385518775971,
+  "mape_percent": 24.816475577723228,
+  "r2": -0.23897691687331735
 }

@@ -404,14 +404,14 @@
       <div class="compare-grid">
         <div class="compare-card dim">
           <h4>Random Forest baseline (Step 7)</h4>
-          <div class="big">4.72%</div>
+          <div class="big">24.82%</div>
         </div>
         <div class="compare-card priv">
           <h4>Hybrid CNN-LSTM-Attention, 4h lookback</h4>
           <div class="big" id="mape-compare-val">—%</div>
         </div>
       </div>
-      <p class="footnote">Verified by <code>random_forest_baseline.py</code> using the hourly Tetouan feature file and a 70/15/15 chronological split. The generated artifact is <code>rf_results.json</code>.</p>
+      <p class="footnote">Verified by <code>random_forest_baseline.py</code> on the same 10-minute windows, targets, scaling, and 70/15/15 chronological split as the hybrid model. The generated artifact is <code>rf_results.json</code>.</p>
     </div>
 
     <div class="caveat">Anomaly thresholds on the next page are recalibrated against this LSTM's tighter error distribution — they are not the same cutoffs used for the earlier Random Forest baseline.</div>
