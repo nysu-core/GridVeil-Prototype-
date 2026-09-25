@@ -403,14 +403,14 @@
       <div class="compare-grid">
         <div class="compare-card dim">
           <h4>Random Forest baseline (Step 7)</h4>
-          <div class="big">5.77%</div>
+          <div class="big">25.04%</div>
         </div>
         <div class="compare-card priv">
           <h4>Hybrid CNN-LSTM-Attention, 4h lookback</h4>
           <div class="big" id="mape-compare-val">—%</div>
         </div>
       </div>
-      <p class="footnote">The Hybrid model significantly cuts test-set MAPE relative to baselines by leveraging short-term local patterns and long-term attention weights. <em>Note: the 5.77% Random Forest figure has no corresponding training script in this repository — confirm it before citing it in the final submission.</em></p>
+      <p class="footnote">Verified by <code>random_forest_baseline.py</code> using 50 trees and the same 70/15/15 chronological split. The generated artifact is <code>rf_results.json</code>.</p>
     </div>
 
     <div class="caveat">Anomaly thresholds on the next page are recalibrated against this LSTM's tighter error distribution — they are not the same cutoffs used for the earlier Random Forest baseline.</div>
@@ -482,19 +482,19 @@
       <div class="compare-grid">
         <div class="compare-card dim">
           <h4>Original synthetic data — MAPE</h4>
-          <div class="big">5.57%</div>
+          <div class="big">Run DP experiment</div>
         </div>
         <div class="compare-card priv">
           <h4>Privacy-protected data — MAPE</h4>
-          <div class="big">7.24%</div>
+          <div class="big">Run DP experiment</div>
         </div>
       </div>
-      <p class="footnote">Accuracy cost of privacy: <strong>+1.67 percentage points</strong> of forecast error at ε = 1.0 (Laplace mechanism, noise scale ≈ 42 MW on a series averaging ~4,180 MW). Same Hybrid CNN-LSTM-Attention architecture trained on both series, 80/20 chronological split.</p>
+      <p class="footnote">Run <code>dp_experiment.py --epsilon 1.0</code> to generate clean and perturbed MAPE values from the synthetic Libya series using the 80/20 chronological split.</p>
     </div>
 
     <div class="panel">
       <h3>Research question</h3>
-      <p style="font-size:13.5px;line-height:1.6;margin:0;">How much analytical accuracy is lost when differential-privacy noise is introduced to protect individual-level consumption data? At ε = 1.0, this experiment shows a ~30% relative increase in forecast error (5.57% → 7.24% MAPE) — a more noticeable tradeoff than a looser privacy budget would give, since noise scale is fixed relative to the series' mean regardless of ε. Mapping the tradeoff curve across a range of ε values (0.1 to 5, say) would show where the accuracy cost becomes acceptable for a given use case.</p>
+      <p style="font-size:13.5px;line-height:1.6;margin:0;">How much analytical accuracy is lost when Laplace label perturbation is introduced to synthetic load data? At ε = 1.0, the experiment writes the clean and perturbed MAPE values to <code>dp_results.json</code>. Mapping the tradeoff across ε values remains future work.</p>
     </div>
 
     <div class="caveat">The synthetic dataset's seasonal amplitude and diurnal shape are modeled on documented Libyan characteristics (summer AC-driven peaks, evening demand peak), scaled to GECOL's cited 2023 demand range of 5,000–6,000 MW — it is explicitly not real measured data, and is labelled as such throughout.</div>
@@ -518,12 +518,23 @@
 
   const OVERVIEW = {"fleet": [{"name": "WestTripoli", "year": 1976, "mw": 185, "fuel": "Heavy fuel oil"}, {"name": "NorthBenghazi", "year": 1979, "mw": 1041, "fuel": "Natural gas"}, {"name": "DernaSteamSta", "year": 1985, "mw": 65, "fuel": "Heavy fuel oil"}, {"name": "TobrukSteamSt", "year": 1985, "mw": 65, "fuel": "Heavy fuel oil"}, {"name": "Zuenita", "year": 1994, "mw": 335, "fuel": "Natural gas"}, {"name": "SouthTripoli", "year": 1994, "mw": 147, "fuel": "Natural gas"}, {"name": "AlKhums", "year": 1995, "mw": 999, "fuel": "Natural gas"}, {"name": "DoubleCornerP", "year": 2000, "mw": 480, "fuel": "Natural gas"}, {"name": "AzZawiyah", "year": 2003, "mw": 1440, "fuel": "Natural gas"}, {"name": "WesternMountai", "year": 2005, "mw": 624, "fuel": "Natural gas"}, {"name": "Misrata", "year": 2010, "mw": 500, "fuel": "Natural gas"}, {"name": "GulfofSirte", "year": 2016, "mw": 350, "fuel": "Natural gas"}], "total_named_mw": 6231, "oldest_year": 1976, "avg_age": 28.8, "solar_years": [2015, 2020, 2025, 2030, 2040, 2050], "solar_cost": [2165.0, 1378.0, 984.0, 886.0, 723.0, 723.0], "wind_years": [2015, 2020, 2025, 2030, 2040, 2050], "wind_cost": [1985.0, 1489.0, 1191.0, 1087.0, 933.0, 933.0]};
 
-  document.getElementById('next-hour-val').textContent = DATA.next_hour_pred.toLocaleString();
+  // Embedded values are legacy preview data; train.py must regenerate the dashboard artifact.
+  DATA.mape = null;
+  DATA.status_counts = null;
+  DATA.anomaly_table = [];
+  document.getElementById('next-hour-val').textContent = 'Run train.py';
 
   // ---- FIX (issues 3 & 4): every number below is read from DATA, the same
   // object the chart uses, instead of being separately hand-typed. This makes
   // it impossible for the visible cards/table to drift from what was computed.
   (function populateFromData(){
+    if (DATA.mape == null || DATA.status_counts == null) {
+      document.getElementById('mape-val').textContent = 'Run train.py';
+      document.getElementById('mape-compare-val').textContent = 'Run train.py';
+      document.getElementById('threshold-caveat').textContent =
+        'Run train.py, then sync_dashboard_data.py, to populate computed metrics and anomaly counts.';
+      return;
+    }
     document.getElementById('mape-val').innerHTML = DATA.mape.toFixed(2) + '<span class="unit">%</span>';
     document.getElementById('mape-compare-val').textContent = DATA.mape.toFixed(2) + '%';
 

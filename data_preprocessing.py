@@ -127,6 +127,10 @@ def preprocess_data(file_path=DATA_PATH, sequence_length=SEQUENCE_LENGTH):
         "feature_scaler": feature_scaler,
         "target_scaler": target_scaler,
         "sequences": sequences,
+        # FIX: exposed so downstream code (train.py) can recover real
+        # timestamps for the test split instead of guessing offsets, and so
+        # nothing ever confuses a split boundary with an anomaly count again.
+        "split_slices": split_slices,
     }
 
 

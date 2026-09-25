@@ -1,0 +1,11 @@
+{
+  "model": "RandomForestRegressor",
+  "random_state": 42,
+  "n_estimators": 50,
+  "split": "70/15/15 chronological",
+  "lookback_steps": 24,
+  "mae_mw": 4237.351763339414,
+  "rmse_mw": 4912.00114868825,
+  "mape_percent": 25.040204630282865,
+  "r2": -0.25960424298723705
+}

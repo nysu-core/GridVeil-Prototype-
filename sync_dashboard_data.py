@@ -13,15 +13,15 @@ import json
 import re
 from pathlib import Path
 
-DASHBOARD_HTML = Path(__file__).parent / "../dashboard/gridveil.html"
-DASHBOARD_JSON = Path(__file__).parent / "../dashboard/dashboard_data.json"
+DASHBOARD_HTML = Path(__file__).parent / "dashboard/gridveil.html"
+DASHBOARD_JSON = Path(__file__).parent / "dashboard/dashboard_data.json"
 
 
 def main():
     html_path = DASHBOARD_HTML.resolve()
     json_path = DASHBOARD_JSON.resolve()
 
-    html = html_path.read_text()
+    html = html_path.read_text(encoding="utf-8")
     new_fields = json.loads(json_path.read_text())
 
     match = re.search(r"const DATA = (\{.*?\});", html, re.DOTALL)
@@ -35,7 +35,7 @@ def main():
 
     new_data_str = "const DATA = " + json.dumps(current_data) + ";"
     updated_html = html[:match.start()] + new_data_str + html[match.end():]
-    html_path.write_text(updated_html)
+    html_path.write_text(updated_html, encoding="utf-8")
     print(f"Synced {json_path.name} into {html_path}")
 
 
