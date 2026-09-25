@@ -118,7 +118,7 @@ python dp_experiment.py --epsilon 1.0
 python sync_dashboard_data.py
 ```
 
-`train.py` uses the 70/15/15 chronological split, 24-step lookback, inverse-scaled MW metrics, and 95th/99th percentile anomaly bands. `random_forest_baseline.py` writes `rf_results.json`; the verified run with 50 trees produced `25.040205%` MAPE. `dp_experiment.py` uses the synthetic Libya series and an 80/20 chronological split, writing `dp_results.json` when TensorFlow is available.
+`train.py` uses the 70/15/15 chronological split, 24-step lookback, inverse-scaled MW metrics, and 95th/99th percentile anomaly bands. `random_forest_baseline.py` uses the report's hourly Tetouan feature file and writes `rf_results.json`; the verified run with 100 trees produced `4.724929%` MAPE. `dp_experiment.py` uses the synthetic Libya series and an 80/20 chronological split, writing `dp_results.json` when TensorFlow is available.
 
 ---
 
@@ -173,7 +173,7 @@ The threshold is computed from the 95th percentile of the model's training absol
 
 ## Reproducibility status
 
-The root-level `train.py` reports metrics after inverse-scaling, and the root-level `random_forest_baseline.py` provides the RF baseline implementation. The verified RF result in `rf_results.json` is 25.040205% MAPE; the old 5.77% claim is not supported by this implementation. The root-level `dp_experiment.py` provides a reproducible Laplace label-perturbation experiment, but it is not a formal end-to-end differential-privacy guarantee without a privacy accountant.
+The root-level `train.py` reports metrics after inverse-scaling, and the root-level `random_forest_baseline.py` provides the hourly RF baseline implementation. The verified RF result in `rf_results.json` is 4.724929% MAPE; the report's 5.77% claim is not reproduced by this configuration. The root-level `dp_experiment.py` provides a reproducible Laplace label-perturbation experiment, but it is not a formal end-to-end differential-privacy guarantee without a privacy accountant.
 
 ---
 
