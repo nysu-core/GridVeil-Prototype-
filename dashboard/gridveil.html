@@ -172,7 +172,8 @@
   .source-note{font-size:11px;color:var(--ink-soft);margin-top:10px;line-height:1.5;border-top:1px solid var(--line);padding-top:10px;}
 
   /* ---- forecast chart ---- */
-  .chart-wrap{position:relative;height:320px;}
+  .chart-wrap{position:relative;width:100%;max-width:960px;margin:0 auto;}
+  .loss-curve{display:block;width:100%;height:auto;max-height:none;object-fit:contain;border-radius:8px;margin-top:15px;}
 
   .legend-row{display:flex;gap:18px;font-size:12.5px;color:var(--ink-soft);margin-top:10px;}
   .legend-row span{display:inline-flex;align-items:center;gap:6px;}
@@ -390,7 +391,7 @@
     <div class="panel">
       <h3>Model Training Performance — Loss Curve</h3>
       <p class="desc">Dec 24–30, 2017 · hourly · Hybrid CNN-LSTM-Attention forecast</p>
-      <div class="chart-wrap"><img src="../results/training_loss_curve.png" alt="Training Loss Curve" style="width: 100%; max-height: 380px; object-fit: contain; border-radius: 8px; margin-top: 15px;"></div>
+      <div class="chart-wrap"><img class="loss-curve" src="../results/training_loss_curve.png" alt="Training Loss Curve"></div>
       <div class="legend-row">
         <span><i style="background:var(--navy)"></i>Actual load</span>
         <span><i style="background:var(--copper)"></i>Predicted load</span>
