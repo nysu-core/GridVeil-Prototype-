@@ -96,7 +96,7 @@ Open the dashboard directly in a browser:
 start dashboard/gridveil.html
 ```
 
-Alternatively, open `dashboard/gridveil.html` in any browser of your choice.
+Alternatively, open `https://gridveil.netlify.app/` in any browser of your choice.
 
 ### Model training and privacy execution
 
